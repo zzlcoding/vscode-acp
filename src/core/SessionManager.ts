@@ -21,7 +21,6 @@ import { SessionUpdateHandler } from '../handlers/SessionUpdateHandler';
 import { SessionHistoryStore } from './SessionHistoryStore';
 import { getAgentConfigs } from '../config/AgentConfig';
 import { log, logError } from '../utils/Logger';
-import { sendEvent, sendError } from '../utils/TelemetryManager';
 
 export interface SessionInfo {
   sessionId: string;
@@ -167,8 +166,6 @@ export class SessionManager extends EventEmitter {
     }
 
     log(`SessionManager: connecting to agent "${agentName}"`);
-    sendEvent('agent/connect.start', { agentName });
-    const connectStartTime = Date.now();
 
     try {
       const workspaceCwd = this.getWorkspaceCwd();
@@ -229,10 +226,8 @@ export class SessionManager extends EventEmitter {
       this.emit('active-session-changed', sessionInfo.sessionId);
 
       log(`Connected to agent ${agentName}, session ${sessionInfo.sessionId}`);
-      sendEvent('agent/connect.end', { agentName, result: 'success' }, { duration: Date.now() - connectStartTime });
       return sessionInfo;
     } catch (e: any) {
-      sendError('agent/connect.end', { agentName, result: 'error', errorMessage: e.message || String(e) }, { duration: Date.now() - connectStartTime });
       throw e;
     }
   }
@@ -264,8 +259,6 @@ export class SessionManager extends EventEmitter {
     if (!session) { return; }
 
     log(`Disconnecting agent ${agentName}`);
-    sendEvent('agent/disconnect', { agentName });
-
     this.agentManager.killAgent(session.agentId);
     this.connectionManager.removeConnection(session.agentId);
     this.sessions.delete(sessionId);

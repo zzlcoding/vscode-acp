@@ -6,7 +6,6 @@ A [Visual Studio Code extension](https://marketplace.visualstudio.com/items?item
 
 ## Features
 
-- **Multi-Agent Support**: Connect to 11 pre-configured ACP agents or add your own
 - **Single-Agent Focus**: One agent active at a time — seamlessly switch between agents
 - **Per-Agent Session List**: Each agent in the Agents view is expandable into its previous sessions. Click a session to restore its history in the chat. Backed by `session/list` when the agent supports it, or by a local per-workspace cache otherwise.
 - **Session Config Options**: Dynamic per-session selectors (mode, model, reasoning level, …) advertised by the agent are rendered automatically in the composer toolbar.
@@ -14,11 +13,11 @@ A [Visual Studio Code extension](https://marketplace.visualstudio.com/items?item
 - **Thinking Display**: See agent reasoning in a collapsible block with streaming animation and elapsed time
 - **Slash Commands**: Autocomplete popup for agent-provided commands with keyboard navigation
 - **Mode & Model Picker**: Switch agent modes and models directly from the chat toolbar (kept for agents that haven't migrated to Session Config Options yet)
+- **Tab Mode Cycling**: Press `Tab` in the input box to quickly cycle through available agent modes
 - **File System Integration**: Agents can read and write files in your workspace
 - **Terminal Execution**: Agents can run commands with terminal output display
 - **Permission Management**: Configurable auto-approve policies for agent actions
 - **Protocol Traffic Logging**: Inspect all ACP JSON-RPC messages with request/response/notification labels
-- **Agent Registry**: Browse and discover available ACP agents
 - **Chat Persistence**: Conversations are preserved when switching panels
 
 ## Quick Start
@@ -36,31 +35,13 @@ A [Visual Studio Code extension](https://marketplace.visualstudio.com/items?item
 
 ## Pre-configured Agents
 
-The extension comes with default configurations for:
-
-| Agent | Command |
-|-------|---------|
-| GitHub Copilot | `npx @github/copilot-language-server@latest --acp` |
-| Claude Code | `npx @agentclientprotocol/claude-agent-acp@latest` |
-| Gemini CLI | `npx @google/gemini-cli@latest --experimental-acp` |
-| Qwen Code | `npx @qwen-code/qwen-code@latest --acp --experimental-skills` |
-| Auggie CLI | `npx @augmentcode/auggie@latest --acp` |
-| Qoder CLI | `npx @qoder-ai/qodercli@latest --acp` |
-| Codex CLI | `npx @zed-industries/codex-acp@latest` |
-| OpenCode | `npx opencode-ai@latest acp` |
-| OpenClaw | `npx openclaw acp` |
-| [Kiro CLI](https://kiro.dev/docs/cli/acp/) | `kiro-cli acp` |
-| [Hermes Agent](https://hermes-agent.nousresearch.com/docs/user-guide/features/acp) | `hermes acp` |
-
-You can add custom agent configurations in settings.
-
-> **Note on Hermes Agent**: Hermes is a Python package, not an npm package. Install it via the [Hermes Quickstart](https://hermes-agent.nousresearch.com/docs/getting-started/quickstart) (Linux/macOS/WSL2 only — Windows requires [WSL2](https://learn.microsoft.com/en-us/windows/wsl/install)). Make sure `hermes` is on your `PATH` and launch VS Code from the same shell/venv. Configure credentials with `hermes model`.
+The extension comes with a default configuration for OpenCode. You can add custom agent configurations in settings.
 
 ## Extension Settings
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `acp.agents` | *(11 agents)* | Agent configurations. Each key is the agent name, value has `command`, `args`, and `env`. |
+| `acp.agents` | *(OpenCode)* | Agent configurations. Each key is the agent name, value has `command`, `args`, and `env`. |
 | `acp.autoApprovePermissions` | `ask` | How agent permission requests are handled: `ask` or `allowAll`. |
 | `acp.defaultWorkingDirectory` | `""` | Default working directory for agent sessions. Empty uses current workspace. |
 | `acp.logTraffic` | `true` | Log all ACP protocol traffic to the ACP Traffic output channel. |
@@ -85,13 +66,14 @@ All commands are accessible via the Command Palette (`Ctrl+Shift+P`):
 | `ACP: Refresh Sessions` | Re-fetch the session list for an agent (also on the agent's right-click menu) |
 | `ACP: Show Log` | Open the ACP Client log output channel |
 | `ACP: Show Protocol Traffic` | Open the ACP Traffic output channel |
-| `ACP: Browse Agent Registry` | Browse the ACP agent registry |
+| `ACP: Browse Registry` | Browse the ACP agent registry |
 
 ## Keyboard Shortcuts
 
 | Shortcut | Action |
 |----------|--------|
-| `Ctrl+Shift+A` (`Cmd+Shift+A` on Mac) | Open Chat Panel |
+| `Ctrl+Alt+I` (`Cmd+Alt+I` on Mac) | Open Chat Panel |
+| `Tab` | Cycle through agent modes |
 | `Escape` (when turn in progress) | Cancel Current Turn |
 
 ## Development

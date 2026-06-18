@@ -201,9 +201,12 @@ export function activate(context: vscode.ExtensionContext): void {
     vscode.window.showInformationMessage(`Disconnected from ${agentName}.`);
   });
 
-  // Open Chat
+  // Open Chat — focus the input box
   const openChatCmd = vscode.commands.registerCommand('acp.openChat', () => {
     vscode.commands.executeCommand('acp-chat.focus');
+    setTimeout(() => {
+      chatWebviewProvider.focusInput();
+    }, 100);
   });
 
   // Send Prompt (from keybinding — just focus chat)

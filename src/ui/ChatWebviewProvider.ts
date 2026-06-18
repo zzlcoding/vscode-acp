@@ -291,6 +291,14 @@ export class ChatWebviewProvider implements vscode.WebviewViewProvider {
   }
 
   /**
+   * 将焦点定位到输入框。
+   * 如果面板未打开，此方法不会生效。
+   */
+  public focusInput(): void {
+    this.postMessage({ type: 'focusInput' });
+  }
+
+  /**
    * Notify webview of a new active session.
    */
   notifyActiveSessionChanged(): void {
@@ -2409,6 +2417,10 @@ export class ChatWebviewProvider implements vscode.WebviewViewProvider {
 
         case 'sessionInfoUpdate':
           handleSessionInfoUpdate(msg.title);
+          break;
+
+        case 'focusInput':
+          promptInput.focus();
           break;
 
         case 'markdownRendered': {

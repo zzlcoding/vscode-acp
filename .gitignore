@@ -5,3 +5,5 @@ out/
 *.map
 .vscode-test/
 .DS_Store
+.codegraph/
+docs/

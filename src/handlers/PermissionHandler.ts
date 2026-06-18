@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import { log } from '../utils/Logger';
-import { sendEvent } from '../utils/TelemetryManager';
 
 import type { RequestPermissionRequest, RequestPermissionResponse } from '@agentclientprotocol/sdk';
 
@@ -22,7 +21,6 @@ export class PermissionHandler {
         o.kind === 'allow_once' || o.kind === 'allow_always'
       );
       if (allowOption) {
-        sendEvent('permission/requested', { permissionType: title, autoApproved: 'true' });
         return {
           outcome: {
             outcome: 'selected',
@@ -42,8 +40,6 @@ export class PermissionHandler {
       };
     });
 
-    sendEvent('permission/requested', { permissionType: title, autoApproved: 'false' });
-
     const selection = await vscode.window.showQuickPick(items, {
       placeHolder: title,
       title: 'ACP Agent Permission Request',
@@ -52,18 +48,12 @@ export class PermissionHandler {
 
     if (!selection) {
       log('Permission cancelled by user');
-      sendEvent('permission/responded', { permissionType: title, outcome: 'cancelled' });
       return {
         outcome: { outcome: 'cancelled' },
       };
     }
 
     log(`Permission selected: ${selection.optionId}`);
-    sendEvent('permission/responded', {
-      permissionType: title,
-      action: selection.optionId,
-      outcome: 'selected',
-    });
     return {
       outcome: {
         outcome: 'selected',

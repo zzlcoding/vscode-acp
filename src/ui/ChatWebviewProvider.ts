@@ -1426,6 +1426,46 @@ export class ChatWebviewProvider implements vscode.WebviewViewProvider {
     }
 
     function cycleMode() {
+      // 支持新的 configOptions API
+      if (useConfigOptions) {
+        const modeOpt = configOptions.find(o => o && o.category === 'mode');
+        if (!modeOpt || !Array.isArray(modeOpt.options) || modeOpt.options.length === 0) return;
+
+        // 获取所有可选值（支持分组和非分组）
+        const values = [];
+        if (isGroupedOptions(modeOpt)) {
+          for (const group of modeOpt.options) {
+            if (Array.isArray(group.options)) {
+              values.push(...group.options.map(v => v.value));
+            }
+          }
+        } else {
+          values.push(...modeOpt.options.map(v => v.value));
+        }
+
+        if (values.length === 0) return;
+
+        const currentIdx = values.indexOf(modeOpt.currentValue);
+        const nextIdx = currentIdx >= 0 ? (currentIdx + 1) % values.length : 0;
+        const nextValue = values[nextIdx];
+
+        // 更新状态并发送消息
+        modeOpt.currentValue = nextValue;
+        const selector = '[data-config-id="' + modeOpt.id + '"]';
+        const wrap = configOptionsContainer.querySelector(selector);
+        if (wrap) {
+          const labelEl = wrap.querySelector('.picker-btn .picker-label');
+          const btn = wrap.querySelector('.picker-btn');
+          if (labelEl) labelEl.textContent = pickerLabelFor(modeOpt);
+          if (btn) btn.title = pickerTooltipFor(modeOpt);
+          const dropdown = wrap.querySelector('.picker-dropdown');
+          if (dropdown) renderConfigDropdown(dropdown, modeOpt);
+        }
+        vscode.postMessage({ type: 'setConfigOption', configId: modeOpt.id, value: nextValue });
+        return;
+      }
+
+      // 兼容旧的 modes API
       if (availableModes.length === 0) return;
 
       const currentIdx = availableModes.findIndex(m => m.id === currentModeId);

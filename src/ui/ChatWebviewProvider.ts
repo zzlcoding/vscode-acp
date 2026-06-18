@@ -1395,6 +1395,13 @@ export class ChatWebviewProvider implements vscode.WebviewViewProvider {
         }
       }
 
+      // Tab 键切换模式（当 slash popup 关闭时）
+      if (e.key === 'Tab' && !slashPopup.classList.contains('open')) {
+        e.preventDefault();
+        cycleMode();
+        return;
+      }
+
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
         if (isProcessing) {
@@ -1416,6 +1423,21 @@ export class ChatWebviewProvider implements vscode.WebviewViewProvider {
 
     function handleCancel() {
       vscode.postMessage({ type: 'cancelTurn' });
+    }
+
+    function cycleMode() {
+      if (availableModes.length === 0) return;
+
+      const currentIdx = availableModes.findIndex(m => m.id === currentModeId);
+      const nextIdx = currentIdx >= 0 ? (currentIdx + 1) % availableModes.length : 0;
+      const nextMode = availableModes[nextIdx];
+
+      currentModeId = nextMode.id;
+      const current = availableModes.find(m => m.id === currentModeId);
+      modePickerLabel.textContent = current ? current.name : 'Mode';
+      modePickerLabel.title = current && current.description ? current.description : '';
+      renderModeDropdown();
+      vscode.postMessage({ type: 'setMode', modeId: nextMode.id });
     }
 
     function execCmd(command) {
